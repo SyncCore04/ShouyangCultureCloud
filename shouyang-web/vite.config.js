@@ -27,7 +27,8 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         // 自动导入全局 SCSS 变量，每个组件的 scoped style 都能直接使用
-        additionalData: `@import "@/assets/styles/variables.scss";`
+        // 使用 @use 替代已弃用的 @import，as * 保持全局命名空间可用
+        additionalData: `@use "@/assets/styles/variables.scss" as *;`
       }
     }
   },

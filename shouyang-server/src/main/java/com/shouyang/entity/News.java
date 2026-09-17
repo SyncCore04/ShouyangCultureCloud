@@ -95,4 +95,10 @@ public class News implements Serializable {
      */
     @TableField("update_time")
     private LocalDateTime updateTime;
+
+    /**
+     * 分类名称（非数据库字段，联表查询时填充）
+     */
+    @TableField(exist = false)
+    private String categoryName;
 }
