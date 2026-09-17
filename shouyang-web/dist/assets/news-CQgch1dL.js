@@ -1,0 +1,1 @@
+import{get as t}from"./request-n45eLPEo.js";function s(e){return t("/news/list",e)}function r(e){return t(`/news/${e}`)}function o(){return t("/news/category")}function a(){return t("/news/hot")}function u(e){return t(`/news/related/${e}`)}export{a,s as b,r as c,u as d,o as g};

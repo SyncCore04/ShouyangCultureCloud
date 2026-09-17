@@ -40,6 +40,12 @@ const routes = [
         meta: { title: '场馆预订' }
       },
       {
+        path: 'service/venue/:id',
+        name: 'VenueDetail',
+        component: () => import('@/views/Service/VenueDetail.vue'),
+        meta: { title: '场馆详情' }
+      },
+      {
         path: 'service/activity',
         name: 'ActivityList',
         component: () => import('@/views/Service/ActivityList.vue'),
