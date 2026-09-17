@@ -428,6 +428,16 @@ const handleLogout = () => {
   z-index: 1001;
 }
 
+/* 透明连接区，防止鼠标移到下拉菜单时触发 mouseleave */
+.user-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+}
+
 .user-dropdown-item {
   display: flex;
   align-items: center;
