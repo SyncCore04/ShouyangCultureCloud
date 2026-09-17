@@ -76,30 +76,63 @@ const routes = [
         component: () => import('@/views/Culture/ProductList.vue'),
         meta: { title: '文创商城' }
       },
-      // 畅游寿阳
+      // 畅游寿阳（通用列表页，通过 props 传递 type）
       {
         path: 'travel/scenic',
         name: 'ScenicList',
-        component: () => import('@/views/Travel/ScenicList.vue'),
+        component: () => import('@/views/Travel/TravelList.vue'),
+        props: { type: 'scenic' },
         meta: { title: '景点推荐' }
       },
       {
         path: 'travel/food',
         name: 'FoodList',
-        component: () => import('@/views/Travel/FoodList.vue'),
+        component: () => import('@/views/Travel/TravelList.vue'),
+        props: { type: 'food' },
         meta: { title: '特色美食' }
       },
       {
         path: 'travel/hotel',
         name: 'HotelList',
-        component: () => import('@/views/Travel/HotelList.vue'),
+        component: () => import('@/views/Travel/TravelList.vue'),
+        props: { type: 'hotel' },
         meta: { title: '民宿酒店' }
       },
       {
         path: 'travel/guide',
         name: 'GuideList',
-        component: () => import('@/views/Travel/GuideList.vue'),
+        component: () => import('@/views/Travel/TravelList.vue'),
+        props: { type: 'guide' },
         meta: { title: '旅游攻略' }
+      },
+      // 畅游寿阳详情页（通用详情页）
+      {
+        path: 'travel/scenic/:id',
+        name: 'ScenicDetail',
+        component: () => import('@/views/Travel/TravelDetail.vue'),
+        props: { type: 'scenic' },
+        meta: { title: '景点详情' }
+      },
+      {
+        path: 'travel/food/:id',
+        name: 'FoodDetail',
+        component: () => import('@/views/Travel/TravelDetail.vue'),
+        props: { type: 'food' },
+        meta: { title: '美食详情' }
+      },
+      {
+        path: 'travel/hotel/:id',
+        name: 'HotelDetail',
+        component: () => import('@/views/Travel/TravelDetail.vue'),
+        props: { type: 'hotel' },
+        meta: { title: '酒店详情' }
+      },
+      {
+        path: 'travel/guide/:id',
+        name: 'GuideDetail',
+        component: () => import('@/views/Travel/TravelDetail.vue'),
+        props: { type: 'guide' },
+        meta: { title: '攻略详情' }
       },
       // 文旅单位
       {
