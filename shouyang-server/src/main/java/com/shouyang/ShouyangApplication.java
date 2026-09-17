@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * @author shouyang
  */
+
+//25计科1班  赵慧晶  毕业设计
 @SpringBootApplication
 @MapperScan("com.shouyang.mapper")
 public class ShouyangApplication {
