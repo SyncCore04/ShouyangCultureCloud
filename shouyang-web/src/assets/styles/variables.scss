@@ -1,0 +1,57 @@
+// ============================================================
+// SCSS 变量定义
+// ============================================================
+
+// 主题色（参考原站深蓝色调，现代化升级）
+$primary-color: #2c3e6b;        // 主色 - 深蓝
+$primary-light: #4a6fa5;        // 主色浅
+$primary-dark: #1a2a4a;         // 主色深
+$primary-bg: #f0f4fa;           // 主色背景
+
+// 辅助色
+$danger-color: #e57373;         // 文旅红 - 资讯/动态
+$warning-color: #ffa726;        // 橙 - 文旅服务
+$purple-color: #ab47bc;         // 紫 - 文旅时空
+$success-color: #66bb6a;        // 绿 - 畅游寿阳
+$teal-color: #26a69a;           // 青 - 文旅单位
+$gray-color: #78909c;           // 灰 - 通用功能
+
+// 文字颜色
+$text-primary: #1a2a4a;         // 主要文字
+$text-regular: #455a64;         // 常规文字
+$text-secondary: #6b7a99;       // 次要文字
+$text-placeholder: #90a4ae;     // 占位文字
+$text-disabled: #cfd8dc;        // 禁用文字
+
+// 背景色
+$bg-page: #f5f7fa;              // 页面背景
+$bg-card: #ffffff;               // 卡片背景
+$bg-gray: #eceff1;               // 灰色背景
+$bg-hover: #f5f7fa;              // hover 背景
+
+// 边框
+$border-color: #e0e6ed;          // 边框色
+$border-light: #eceff1;          // 浅边框
+$border-radius: 8px;              // 圆角
+$border-radius-sm: 4px;           // 小圆角
+$border-radius-lg: 12px;          // 大圆角
+
+// 阴影
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+$shadow-hover: 0 6px 20px rgba(44, 62, 107, 0.15);
+
+// 布局
+$container-width: 1200px;         // 内容最大宽度
+$header-height: 64px;              // 顶部导航高度
+$footer-height: 200px;             // 页脚高度
+
+// 过渡动画
+$transition-base: all 0.3s ease;
+$transition-fast: all 0.15s ease;
+
+// 断点
+$breakpoint-sm: 768px;
+$breakpoint-md: 992px;
+$breakpoint-lg: 1200px;
