@@ -82,6 +82,25 @@ const routes = [
         component: () => import('@/views/Culture/ProductList.vue'),
         meta: { title: '文创商城' }
       },
+      // 文旅时空详情页
+      {
+        path: 'culture/pavilion/:id',
+        name: 'PavilionDetail',
+        component: () => import('@/views/Culture/PavilionDetail.vue'),
+        meta: { title: '展馆详情' }
+      },
+      {
+        path: 'culture/heritage/:id',
+        name: 'HeritageDetail',
+        component: () => import('@/views/Culture/HeritageDetail.vue'),
+        meta: { title: '非遗详情' }
+      },
+      {
+        path: 'culture/product/:id',
+        name: 'ProductDetail',
+        component: () => import('@/views/Culture/ProductDetail.vue'),
+        meta: { title: '商品详情' }
+      },
       // 畅游寿阳（通用列表页，通过 props 传递 type）
       {
         path: 'travel/scenic',
