@@ -22,7 +22,7 @@ const routes = [
       {
         path: 'banner',
         name: 'Banner',
-        component: () => import('@/views/Banner/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '轮播图管理', icon: 'Picture' }
       },
       {
@@ -34,85 +34,85 @@ const routes = [
       {
         path: 'category',
         name: 'Category',
-        component: () => import('@/views/Category/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '分类管理', icon: 'Menu' }
       },
       {
         path: 'ticket',
         name: 'Ticket',
-        component: () => import('@/views/Ticket/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '票务管理', icon: 'Ticket' }
       },
       {
         path: 'venue',
         name: 'Venue',
-        component: () => import('@/views/Venue/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '场馆管理', icon: 'OfficeBuilding' }
       },
       {
         path: 'activity',
         name: 'Activity',
-        component: () => import('@/views/Activity/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '活动管理', icon: 'Calendar' }
       },
       {
         path: 'pavilion',
         name: 'Pavilion',
-        component: () => import('@/views/Pavilion/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '展馆管理', icon: 'PictureFilled' }
       },
       {
         path: 'heritage',
         name: 'Heritage',
-        component: () => import('@/views/Heritage/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '非遗管理', icon: 'Star' }
       },
       {
         path: 'product',
         name: 'Product',
-        component: () => import('@/views/Product/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '文创管理', icon: 'Goods' }
       },
       {
         path: 'scenic',
         name: 'Scenic',
-        component: () => import('@/views/Scenic/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '景点管理', icon: 'Location' }
       },
       {
         path: 'food',
         name: 'Food',
-        component: () => import('@/views/Food/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '美食管理', icon: 'Food' }
       },
       {
         path: 'hotel',
         name: 'Hotel',
-        component: () => import('@/views/Hotel/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '酒店管理', icon: 'HomeFilled' }
       },
       {
         path: 'guide',
         name: 'Guide',
-        component: () => import('@/views/Guide/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '攻略管理', icon: 'Guide' }
       },
       {
         path: 'org',
         name: 'Org',
-        component: () => import('@/views/Org/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '单位管理', icon: 'Building' }
       },
       {
         path: 'user',
         name: 'UserManage',
-        component: () => import('@/views/User/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '用户管理', icon: 'User' }
       },
       {
         path: 'profile',
         name: 'Profile',
-        component: () => import('@/views/Profile/index.vue'),
+        component: () => import('@/views/Placeholder.vue'),
         meta: { title: '个人设置', icon: 'Setting' }
       }
     ]

@@ -14,7 +14,7 @@ export const useUserStore = defineStore('adminUser', () => {
 
   async function login(loginForm) {
     const res = await post('/admin/login', loginForm)
-    const { token: newToken, userInfo: info } = res.data
+    const { token: newToken, adminInfo: info } = res.data
     token.value = newToken
     userInfo.value = info
     setToken(newToken)

@@ -31,7 +31,7 @@
       <!-- 用户信息 -->
       <el-dropdown trigger="hover" @command="handleCommand">
         <div class="user-info">
-          <el-avatar :size="32" :size="32">
+          <el-avatar :size="32">
             {{ userStore.nickname.charAt(0) }}
           </el-avatar>
           <span class="username">{{ userStore.nickname }}</span>
