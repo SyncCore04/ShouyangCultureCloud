@@ -1,0 +1,81 @@
+# ============================================================
+# 寿阳文旅云 - 主配置文件
+# ============================================================
+
+spring:
+  application:
+    name: shouyang-server
+  # 激活的环境配置（dev / prod）
+  profiles:
+    active: dev
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB        # 单个文件最大 10MB
+      max-request-size: 50MB     # 单次请求最大 50MB
+  # Jackson 日期格式化
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+
+# 服务端口
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  # Tomcat 配置
+  tomcat:
+    uri-encoding: UTF-8
+    threads:
+      max: 200
+      min-spare: 10
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.shouyang.entity
+  configuration:
+    map-underscore-to-camel-case: true    # 下划线转驼峰
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 开发环境打印 SQL
+  global-config:
+    db-config:
+      id-type: auto                        # 主键自增
+      logic-delete-field: deleted          # 逻辑删除字段（可选，需要时在实体加字段）
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# JWT 配置
+jwt:
+  # 密钥（生产环境务必修改为复杂随机字符串）
+  secret: shouyang-culture-tourism-secret-key-2024-very-long-and-safe
+  # Token 过期时间（毫秒），默认 24 小时 = 86400000
+  expire: 86400000
+
+# 文件上传配置
+file:
+  # 上传文件存储路径（项目根目录下的 uploads 文件夹）
+  upload-path: ./uploads/
+  # 允许的图片类型
+  allowed-image-types: jpg,jpeg,png,gif,webp
+  # 单张图片最大大小（字节），默认 5MB
+  max-image-size: 5242880
+
+# Knife4j 接口文档配置
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-version: true
+    enable-swagger-models: true
+  # 生产环境关闭接口文档（在 application-prod.yml 中覆盖为 false）
+
+# 日志配置
+logging:
+  level:
+    com.shouyang: debug
+    org.springframework.web: info
+    com.baomidou.mybatisplus: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"

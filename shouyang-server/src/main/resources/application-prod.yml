@@ -1,0 +1,45 @@
+# ============================================================
+# 生产环境配置
+# 部署时通过 --spring.profiles.active=prod 激活
+# 敏感信息建议通过环境变量注入，不要硬编码
+# ============================================================
+
+spring:
+  # 数据源配置（生产环境通过环境变量覆盖）
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:shouyang_culture}?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+# 生产环境不打印 SQL
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# 生产环境关闭接口文档
+knife4j:
+  enable: false
+  production: true
+
+# 生产环境日志级别
+logging:
+  level:
+    com.shouyang: info
+    org.springframework.web: warn
+  file:
+    name: ./logs/shouyang-server.log
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 30
+
+# 文件上传路径（生产环境建议使用绝对路径）
+file:
+  upload-path: ${UPLOAD_PATH:/data/shouyang/uploads/}
