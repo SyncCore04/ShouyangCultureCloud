@@ -1,6 +1,10 @@
 package com.shouyang.controller.admin;
 
+import cn.hutool.crypto.digest.BCrypt;
+import com.shouyang.common.exception.BusinessException;
 import com.shouyang.common.result.Result;
+import com.shouyang.common.result.ResultCode;
+import com.shouyang.dto.PasswordUpdateDTO;
 import com.shouyang.dto.UserLoginDTO;
 import com.shouyang.entity.SysAdmin;
 import com.shouyang.service.SysAdminService;
@@ -50,5 +54,32 @@ public class AdminAuthController {
         // 密码字段不返回
         admin.setPassword(null);
         return Result.success(admin);
+    }
+
+    /**
+     * 修改管理员密码
+     *
+     * @param dto 密码修改信息
+     * @return 操作结果
+     */
+    @PutMapping("/password")
+    public Result<Void> updatePassword(@Valid @RequestBody PasswordUpdateDTO dto) {
+        Long adminId = UserContext.getUserId();
+        SysAdmin admin = sysAdminService.getById(adminId);
+        if (admin == null) {
+            throw new BusinessException(ResultCode.USERNAME_NOT_FOUND);
+        }
+
+        // 验证旧密码
+        if (!BCrypt.checkpw(dto.getOldPassword(), admin.getPassword())) {
+            throw new BusinessException(ResultCode.PASSWORD_ERROR);
+        }
+
+        // 更新新密码
+        String newHash = BCrypt.hashpw(dto.getNewPassword(), BCrypt.gensalt());
+        admin.setPassword(newHash);
+        sysAdminService.updateById(admin);
+
+        return Result.success();
     }
 }

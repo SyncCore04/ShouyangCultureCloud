@@ -1,180 +1,261 @@
 <template>
   <div class="dashboard-page">
     <!-- 统计卡片 -->
-    <el-row :gutter="16" class="stat-row">
-      <el-col :span="6" v-for="card in statCards" :key="card.title">
+    <el-row :gutter="16" class="stats-row">
+      <el-col :span="6" v-for="card in statCards" :key="card.key">
         <div class="stat-card" :style="{ background: card.gradient }">
           <div class="stat-icon">
-            <el-icon :size="32" color="#fff"><component :is="card.icon" /></el-icon>
+            <el-icon :size="36"><component :is="card.icon" /></el-icon>
           </div>
           <div class="stat-info">
             <div class="stat-value">{{ card.value }}</div>
-            <div class="stat-title">{{ card.title }}</div>
+            <div class="stat-label">{{ card.label }}</div>
+          </div>
+          <div v-if="card.today !== undefined" class="stat-today">
+            今日 +{{ card.today }}
           </div>
         </div>
       </el-col>
     </el-row>
 
-    <!-- 图表区域 -->
+    <!-- 图表和热门资讯 -->
     <el-row :gutter="16" class="chart-row">
+      <!-- 资讯发布趋势 -->
       <el-col :span="16">
-        <div class="chart-card">
-          <div class="chart-header">
-            <h3 class="chart-title">资讯发布趋势</h3>
-            <el-radio-group v-model="chartRange" size="small" @change="loadChartData">
-              <el-radio-button value="7">近7天</el-radio-button>
-              <el-radio-button value="30">近30天</el-radio-button>
-            </el-radio-group>
-          </div>
-          <div ref="chartRef" class="chart-container"></div>
-        </div>
+        <el-card class="chart-card" shadow="never">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">资讯发布趋势（最近 7 天）</span>
+            </div>
+          </template>
+          <div ref="chartRef" class="trend-chart"></div>
+        </el-card>
       </el-col>
 
+      <!-- 热门资讯 -->
       <el-col :span="8">
-        <div class="chart-card">
-          <div class="chart-header">
-            <h3 class="chart-title">热门资讯 TOP5</h3>
-          </div>
-          <div class="hot-list">
-            <div v-for="(item, index) in hotNews" :key="item.id" class="hot-item">
-              <span class="hot-rank" :class="{ top: index < 3 }">{{ index + 1 }}</span>
-              <span class="hot-title text-ellipsis">{{ item.title }}</span>
-              <span class="hot-views">{{ item.viewCount }}</span>
+        <el-card class="hot-card" shadow="never">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">热门资讯 TOP5</span>
             </div>
-            <el-empty v-if="hotNews.length === 0" description="暂无数据" :image-size="60" />
-          </div>
-        </div>
-      </el-col>
-    </el-row>
-
-    <!-- 快捷操作 -->
-    <el-row :gutter="16" class="quick-row">
-      <el-col :span="24">
-        <div class="chart-card">
-          <div class="chart-header">
-            <h3 class="chart-title">快捷操作</h3>
-          </div>
-          <div class="quick-actions">
+          </template>
+          <div class="hot-list" v-loading="loading">
             <div
-              v-for="action in quickActions"
-              :key="action.path"
-              class="quick-item"
-              @click="router.push(action.path)"
+              v-for="(item, index) in hotNewsList"
+              :key="item.id"
+              class="hot-item"
             >
-              <el-icon :size="24" :color="action.color"><component :is="action.icon" /></el-icon>
-              <span>{{ action.title }}</span>
+              <div class="hot-rank" :class="'rank-' + (index + 1)">{{ index + 1 }}</div>
+              <div class="hot-content">
+                <div class="hot-title" @click="viewNews(item.id)">{{ item.title }}</div>
+                <div class="hot-meta">
+                  <span><el-icon><View /></el-icon> {{ item.viewCount }}</span>
+                </div>
+              </div>
             </div>
+            <el-empty v-if="hotNewsList.length === 0" description="暂无数据" :image-size="80" />
           </div>
-        </div>
+        </el-card>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
+import { User, Document, Calendar, Tickets, View } from '@element-plus/icons-vue'
+import { getDashboardStats, getDashboardTrend, getHotNews } from '@/api/dashboard'
 
 const router = useRouter()
 const chartRef = ref(null)
-const chartRange = ref('7')
 let chartInstance = null
+const loading = ref(false)
 
-// 统计卡片（占位数据，后续接接口）
+const stats = reactive({
+  userTotal: 0,
+  newsTotal: 0,
+  activityTotal: 0,
+  registerTotal: 0,
+  todayNewUsers: 0,
+  todayNews: 0
+})
+
+const hotNewsList = ref([])
+
+// 统计卡片配置
 const statCards = ref([
-  { title: '用户总数', value: 128, icon: 'User', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-  { title: '资讯总数', value: 56, icon: 'Document', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { title: '活动总数', value: 12, icon: 'Calendar', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-  { title: '报名总次数', value: 326, icon: 'Tickets', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }
-])
-
-// 热门资讯（占位）
-const hotNews = ref([
-  { id: 1, title: '寿阳非遗传承人灵石之行：交流互鉴之光照亮非遗传承之路', viewCount: 356 },
-  { id: 2, title: '【怡然见晋中 休闲寿阳游】非遗进景区展演活动热闹非凡', viewCount: 289 },
-  { id: 3, title: '寿阳县庆祝新中国成立75周年群众文化活动启动', viewCount: 215 },
-  { id: 4, title: '九九重阳 情暖夕阳——文化馆流动文化走进景尚敬老院', viewCount: 178 },
-  { id: 5, title: '关于举办寿阳县2024年全民阅读活动的通知', viewCount: 142 }
-])
-
-// 快捷操作
-const quickActions = [
-  { title: '发布资讯', path: '/news', icon: 'EditPen', color: '#e57373' },
-  { title: '添加活动', path: '/activity', icon: 'Plus', color: '#ffa726' },
-  { title: '轮播图管理', path: '/banner', icon: 'Picture', color: '#ab47bc' },
-  { title: '景点管理', path: '/scenic', icon: 'Location', color: '#66bb6a' },
-  { title: '用户管理', path: '/user', icon: 'User', color: '#26a69a' },
-  { title: '个人设置', path: '/profile', icon: 'Setting', color: '#78909c' }
-]
-
-// 加载图表数据（占位）
-function loadChartData() {
-  if (!chartInstance) return
-
-  const days = chartRange.value === '7' ? 7 : 30
-  const dates = []
-  const values = []
-  const today = new Date()
-
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(today)
-    d.setDate(d.getDate() - i)
-    dates.push(`${d.getMonth() + 1}/${d.getDate()}`)
-    values.push(Math.floor(Math.random() * 10) + 1)
+  {
+    key: 'user',
+    label: '用户总数',
+    value: 0,
+    today: 0,
+    icon: 'User',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  },
+  {
+    key: 'news',
+    label: '资讯总数',
+    value: 0,
+    today: 0,
+    icon: 'Document',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+  },
+  {
+    key: 'activity',
+    label: '活动总数',
+    value: 0,
+    icon: 'Calendar',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+  },
+  {
+    key: 'register',
+    label: '报名总数',
+    value: 0,
+    icon: 'Tickets',
+    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
   }
+])
 
-  chartInstance.setOption({
-    tooltip: { trigger: 'axis' },
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+// 加载统计数据
+const loadStats = async () => {
+  try {
+    const res = await getDashboardStats()
+    const data = res.data
+    stats.userTotal = data.userTotal || 0
+    stats.newsTotal = data.newsTotal || 0
+    stats.activityTotal = data.activityTotal || 0
+    stats.registerTotal = data.registerTotal || 0
+    stats.todayNewUsers = data.todayNewUsers || 0
+    stats.todayNews = data.todayNews || 0
+
+    // 更新卡片数据
+    statCards.value[0].value = stats.userTotal
+    statCards.value[0].today = stats.todayNewUsers
+    statCards.value[1].value = stats.newsTotal
+    statCards.value[1].today = stats.todayNews
+    statCards.value[2].value = stats.activityTotal
+    statCards.value[3].value = stats.registerTotal
+  } catch (e) {
+    console.error('加载统计数据失败:', e)
+  }
+}
+
+// 加载趋势图
+const loadTrend = async () => {
+  try {
+    const res = await getDashboardTrend(7)
+    const data = res.data
+    await nextTick()
+    initChart(data.dates, data.counts)
+  } catch (e) {
+    console.error('加载趋势数据失败:', e)
+  }
+}
+
+// 加载热门资讯
+const loadHotNews = async () => {
+  loading.value = true
+  try {
+    const res = await getHotNews(5)
+    hotNewsList.value = res.data || []
+  } catch (e) {
+    console.error('加载热门资讯失败:', e)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 初始化 ECharts
+const initChart = (dates, counts) => {
+  if (!chartRef.value) return
+  if (chartInstance) {
+    chartInstance.dispose()
+  }
+  chartInstance = echarts.init(chartRef.value)
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      formatter: '{b}<br/>发布数量：{c} 篇'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      top: '10%',
+      containLabel: true
+    },
     xAxis: {
       type: 'category',
+      boundaryGap: false,
       data: dates,
-      boundaryGap: false
+      axisLine: { lineStyle: { color: '#dcdfe6' } },
+      axisLabel: { color: '#909399' }
     },
     yAxis: {
       type: 'value',
-      minInterval: 1
+      minInterval: 1,
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: { lineStyle: { color: '#f0f2f5' } },
+      axisLabel: { color: '#909399' }
     },
     series: [
       {
         name: '发布数量',
         type: 'line',
         smooth: true,
-        data: values,
+        data: counts,
+        symbol: 'circle',
+        symbolSize: 8,
+        lineStyle: {
+          width: 3,
+          color: '#2c3e6b'
+        },
+        itemStyle: {
+          color: '#2c3e6b',
+          borderColor: '#fff',
+          borderWidth: 2
+        },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: 'rgba(44, 62, 107, 0.3)' },
             { offset: 1, color: 'rgba(44, 62, 107, 0.02)' }
           ])
-        },
-        lineStyle: { color: '#2c3e6b', width: 2 },
-        itemStyle: { color: '#2c3e6b' }
+        }
       }
     ]
-  })
+  }
+  chartInstance.setOption(option)
 }
 
-function initChart() {
-  if (!chartRef.value) return
-  chartInstance = echarts.init(chartRef.value)
-  loadChartData()
+// 窗口大小变化时重绘图表
+const handleResize = () => {
+  if (chartInstance) {
+    chartInstance.resize()
+  }
 }
 
-function handleResize() {
-  chartInstance?.resize()
+// 查看资讯详情
+const viewNews = (id) => {
+  router.push(`/news`)
 }
 
 onMounted(() => {
-  nextTick(() => {
-    initChart()
-  })
+  loadStats()
+  loadTrend()
+  loadHotNews()
   window.addEventListener('resize', handleResize)
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
-  chartInstance?.dispose()
+  if (chartInstance) {
+    chartInstance.dispose()
+    chartInstance = null
+  }
 })
 </script>
 
@@ -182,156 +263,128 @@ onUnmounted(() => {
 .dashboard-page {
   padding: 16px;
 }
-
-.stat-row {
+.stats-row {
   margin-bottom: 16px;
 }
-
 .stat-card {
-  border-radius: 8px;
-  padding: 20px;
+  position: relative;
+  border-radius: 12px;
+  padding: 24px;
+  color: #fff;
   display: flex;
   align-items: center;
   gap: 16px;
-  color: #fff;
+  overflow: hidden;
+  min-height: 110px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
-
+  transition: transform 0.2s, box-shadow 0.2s;
   &:hover {
-    transform: translateY(-3px);
-  }
-
-  .stat-icon {
-    width: 56px;
-    height: 56px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .stat-info {
-    .stat-value {
-      font-size: 28px;
-      font-weight: bold;
-      line-height: 1.2;
-    }
-
-    .stat-title {
-      font-size: 13px;
-      opacity: 0.85;
-      margin-top: 4px;
-    }
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
 }
-
+.stat-icon {
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+.stat-info {
+  flex: 1;
+}
+.stat-value {
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+.stat-today {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
 .chart-row {
-  margin-bottom: 16px;
-}
-
-.chart-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-}
-
-.chart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-
-  .chart-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #303133;
+  .chart-card,
+  .hot-card {
+    height: 100%;
+    :deep(.el-card__body) {
+      padding: 16px;
+    }
   }
 }
-
-.chart-container {
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+.trend-chart {
+  width: 100%;
   height: 320px;
 }
-
 .hot-list {
-  .hot-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .hot-rank {
-    width: 22px;
-    height: 22px;
-    border-radius: 4px;
-    background: #c0c4cc;
-    color: #fff;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    &.top {
-      background: #f56c6c;
-    }
-  }
-
-  .hot-title {
-    flex: 1;
-    font-size: 13px;
-    color: #606266;
-  }
-
-  .hot-views {
-    font-size: 12px;
-    color: #909399;
-    flex-shrink: 0;
+  min-height: 320px;
+}
+.hot-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f2f5;
+  &:last-child {
+    border-bottom: none;
   }
 }
-
-.quick-row {
-  .quick-actions {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-  }
-
-  .quick-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid #ebeef5;
-
-    &:hover {
-      background: #f5f7fa;
-      border-color: #2c3e6b;
-      transform: translateY(-2px);
-    }
-
-    span {
-      font-size: 13px;
-      color: #606266;
-    }
-  }
+.hot-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0;
+  background: #c0c4cc;
+  &.rank-1 { background: #f56c6c; }
+  &.rank-2 { background: #e6a23c; }
+  &.rank-3 { background: #67c23a; }
 }
-
-.text-ellipsis {
+.hot-content {
+  flex: 1;
+  min-width: 0;
+}
+.hot-title {
+  font-size: 14px;
+  color: #303133;
+  cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  &:hover {
+    color: #2c3e6b;
+  }
+}
+.hot-meta {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  .el-icon {
+    font-size: 12px;
+  }
 }
 </style>

@@ -106,13 +106,13 @@ const routes = [
       {
         path: 'user',
         name: 'UserManage',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/User/index.vue'),
         meta: { title: '用户管理', icon: 'User' }
       },
       {
         path: 'profile',
         name: 'Profile',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Profile/index.vue'),
         meta: { title: '个人设置', icon: 'Setting' }
       }
     ]
