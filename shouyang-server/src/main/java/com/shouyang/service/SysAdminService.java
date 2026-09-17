@@ -1,16 +1,31 @@
 package com.shouyang.service;
 
-import com.shouyang.entity.SysAdmin;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shouyang.dto.UserLoginDTO;
+import com.shouyang.entity.SysAdmin;
+
+import java.util.Map;
 
 /**
- * <p>
- * 管理员表 服务类
- * </p>
+ * 管理员 Service 接口
  *
  * @author shouyang
- * @since 2026-09-17
  */
 public interface SysAdminService extends IService<SysAdmin> {
 
+    /**
+     * 管理员登录
+     *
+     * @param dto 登录信息
+     * @return 包含 token 和 adminInfo 的 Map
+     */
+    Map<String, Object> login(UserLoginDTO dto);
+
+    /**
+     * 获取管理员信息
+     *
+     * @param adminId 管理员ID
+     * @return 管理员实体
+     */
+    SysAdmin getAdminInfo(Long adminId);
 }
