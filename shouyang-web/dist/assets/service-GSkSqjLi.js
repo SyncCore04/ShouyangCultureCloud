@@ -1,0 +1,1 @@
+import{get as i,post as e}from"./request-BDsxDREb.js";function r(t){return i("/activity/list",t)}function u(t){return i(`/activity/${t}`)}function c(t){return e("/activity/register",t)}function s(t){return i("/ticket/list",t)}function a(t){return i("/venue/list",t)}function o(t){return i(`/venue/${t}`)}export{a,o as b,r as c,u as d,s as g,c as r};
