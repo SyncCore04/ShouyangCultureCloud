@@ -173,24 +173,38 @@ const routes = [
         component: () => import('@/views/Search/index.vue'),
         meta: { title: '搜索' }
       },
-      // 用户中心
+      // 用户中心（嵌套布局，左侧菜单+右侧内容）
       {
         path: 'user',
-        name: 'UserCenter',
-        component: () => import('@/views/User/Profile.vue'),
-        meta: { title: '个人中心', requireAuth: true }
-      },
-      {
-        path: 'user/favorite',
-        name: 'UserFavorite',
-        component: () => import('@/views/User/Favorite.vue'),
-        meta: { title: '我的收藏', requireAuth: true }
-      },
-      {
-        path: 'user/activity',
-        name: 'UserActivity',
-        component: () => import('@/views/User/Activity.vue'),
-        meta: { title: '我的报名', requireAuth: true }
+        component: () => import('@/views/User/Layout.vue'),
+        meta: { title: '用户中心', requireAuth: true },
+        redirect: '/user/profile',
+        children: [
+          {
+            path: 'profile',
+            name: 'UserProfile',
+            component: () => import('@/views/User/Profile.vue'),
+            meta: { title: '个人信息', requireAuth: true }
+          },
+          {
+            path: 'favorite',
+            name: 'UserFavorite',
+            component: () => import('@/views/User/Favorite.vue'),
+            meta: { title: '我的收藏', requireAuth: true }
+          },
+          {
+            path: 'activity',
+            name: 'UserActivity',
+            component: () => import('@/views/User/Activity.vue'),
+            meta: { title: '我的报名', requireAuth: true }
+          },
+          {
+            path: 'password',
+            name: 'UserPassword',
+            component: () => import('@/views/User/Password.vue'),
+            meta: { title: '修改密码', requireAuth: true }
+          }
+        ]
       }
     ]
   },

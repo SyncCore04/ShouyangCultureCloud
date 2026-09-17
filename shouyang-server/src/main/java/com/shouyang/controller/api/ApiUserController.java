@@ -1,13 +1,16 @@
 package com.shouyang.controller.api;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.shouyang.common.result.Result;
 import com.shouyang.dto.PasswordUpdateDTO;
 import com.shouyang.dto.UserLoginDTO;
 import com.shouyang.dto.UserRegisterDTO;
 import com.shouyang.dto.UserUpdateDTO;
 import com.shouyang.entity.SysUser;
+import com.shouyang.service.ActivityRegisterService;
 import com.shouyang.service.SysUserService;
 import com.shouyang.utils.UserContext;
+import com.shouyang.vo.ActivityRegisterVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,9 @@ public class ApiUserController {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Autowired
+    private ActivityRegisterService activityRegisterService;
 
     /**
      * 用户注册
@@ -91,5 +97,34 @@ public class ApiUserController {
         Long userId = UserContext.getUserId();
         sysUserService.updatePassword(userId, dto);
         return Result.success("密码修改成功", null);
+    }
+
+    /**
+     * 我的活动报名列表（含活动信息）
+     *
+     * @param page 当前页
+     * @param size 每页条数
+     * @return 分页结果
+     */
+    @GetMapping("/activity/list")
+    public Result<IPage<ActivityRegisterVO>> myActivityList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Long userId = UserContext.getUserId();
+        IPage<ActivityRegisterVO> result = activityRegisterService.getMyRegisterList(userId, page, size);
+        return Result.success(result);
+    }
+
+    /**
+     * 取消活动报名（仅未开始的活动可取消）
+     *
+     * @param registerId 报名记录ID
+     * @return 操作结果
+     */
+    @DeleteMapping("/activity/cancel/{registerId}")
+    public Result<Void> cancelActivity(@PathVariable Long registerId) {
+        Long userId = UserContext.getUserId();
+        activityRegisterService.cancelRegister(userId, registerId);
+        return Result.success("取消报名成功", null);
     }
 }

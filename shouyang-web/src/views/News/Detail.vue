@@ -140,6 +140,7 @@ import {
   User, Clock, View, Star, InfoFilled, HotWater, Connection
 } from '@element-plus/icons-vue'
 import { getNewsDetail, getHotNews, getRelatedNews } from '@/api/news'
+import { addFavorite, deleteFavorite, checkFavorite } from '@/api/favorite'
 import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
@@ -208,21 +209,43 @@ const goDetail = (id) => {
 }
 
 // 收藏/取消收藏
-const handleFavorite = () => {
+const handleFavorite = async () => {
   if (!userStore.isLogin) {
     ElMessage.warning('请先登录后再收藏')
     router.push({ path: '/login', query: { redirect: route.fullPath } })
     return
   }
-  isFavorited.value = !isFavorited.value
-  ElMessage.success(isFavorited.value ? '收藏成功' : '已取消收藏')
-  // TODO: 调用收藏接口
+  try {
+    if (isFavorited.value) {
+      await deleteFavorite('news', route.params.id)
+      isFavorited.value = false
+      ElMessage.success('已取消收藏')
+    } else {
+      await addFavorite('news', route.params.id)
+      isFavorited.value = true
+      ElMessage.success('收藏成功')
+    }
+  } catch (e) {
+    console.error('收藏操作失败:', e)
+  }
+}
+
+// 检查收藏状态
+const checkFavStatus = async () => {
+  if (!userStore.isLogin) return
+  try {
+    const res = await checkFavorite('news', route.params.id)
+    isFavorited.value = res.data?.favorited || false
+  } catch (e) {
+    console.error('检查收藏状态失败:', e)
+  }
 }
 
 // 监听路由变化（同一组件内切换文章）
 watch(() => route.params.id, () => {
   loadDetail()
   loadRelatedNews()
+  checkFavStatus()
   window.scrollTo({ top: 0 })
 })
 
@@ -230,6 +253,7 @@ onMounted(() => {
   loadDetail()
   loadHotNews()
   loadRelatedNews()
+  checkFavStatus()
 })
 </script>
 

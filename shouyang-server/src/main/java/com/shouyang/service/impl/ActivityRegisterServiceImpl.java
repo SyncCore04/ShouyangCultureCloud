@@ -1,6 +1,8 @@
 package com.shouyang.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shouyang.common.exception.BusinessException;
 import com.shouyang.entity.Activity;
@@ -8,11 +10,15 @@ import com.shouyang.entity.ActivityRegister;
 import com.shouyang.mapper.ActivityRegisterMapper;
 import com.shouyang.service.ActivityRegisterService;
 import com.shouyang.service.ActivityService;
+import com.shouyang.vo.ActivityRegisterVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 活动报名 Service 实现类
@@ -90,5 +96,80 @@ public class ActivityRegisterServiceImpl extends ServiceImpl<ActivityRegisterMap
                 .eq(ActivityRegister::getUserId, userId)
                 .eq(ActivityRegister::getStatus, 1)); // 只统计有效报名
         return count > 0;
+    }
+
+    /**
+     * 我的报名列表（含活动信息）
+     */
+    @Override
+    public IPage<ActivityRegisterVO> getMyRegisterList(Long userId, int page, int size) {
+        // 1. 分页查询报名记录
+        LambdaQueryWrapper<ActivityRegister> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ActivityRegister::getUserId, userId)
+                .eq(ActivityRegister::getStatus, 1) // 只查有效报名
+                .orderByDesc(ActivityRegister::getCreateTime);
+
+        IPage<ActivityRegister> registerPage = this.page(new Page<>(page, size), wrapper);
+        List<ActivityRegister> records = registerPage.getRecords();
+
+        // 2. 组装活动信息
+        List<ActivityRegisterVO> voList = new ArrayList<>();
+        for (ActivityRegister register : records) {
+            ActivityRegisterVO vo = new ActivityRegisterVO();
+            BeanUtils.copyProperties(register, vo);
+            // 填充活动信息
+            Activity activity = activityService.getById(register.getActivityId());
+            if (activity != null) {
+                vo.setActivityName(activity.getTitle());
+                vo.setCoverImage(activity.getCoverImage());
+                vo.setStartTime(activity.getStartTime());
+                vo.setEndTime(activity.getEndTime());
+                vo.setLocation(activity.getVenue());
+                vo.setActivityStatus(activity.getStatus() != null ? activity.getStatus().intValue() : null);
+            }
+            voList.add(vo);
+        }
+
+        IPage<ActivityRegisterVO> result = new Page<>(page, size, registerPage.getTotal());
+        result.setRecords(voList);
+        return result;
+    }
+
+    /**
+     * 取消报名（仅未开始的活动可取消）
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelRegister(Long userId, Long registerId) {
+        // 1. 校验报名记录是否存在且属于当前用户
+        ActivityRegister register = this.getById(registerId);
+        if (register == null) {
+            throw new BusinessException("报名记录不存在");
+        }
+        if (!register.getUserId().equals(userId)) {
+            throw new BusinessException("无权操作他人的报名记录");
+        }
+        if (register.getStatus() != null && register.getStatus() != 1) {
+            throw new BusinessException("该报名记录已取消或已失效");
+        }
+
+        // 2. 校验活动状态（仅未开始的活动可取消）
+        Activity activity = activityService.getById(register.getActivityId());
+        if (activity == null) {
+            throw new BusinessException("活动不存在");
+        }
+        if (activity.getStatus() != null && activity.getStatus() != 0) {
+            throw new BusinessException("活动已开始或已结束，无法取消报名");
+        }
+
+        // 3. 取消报名（状态改为0）
+        register.setStatus((byte) 0);
+        this.updateById(register);
+
+        // 4. 活动报名人数 -1
+        activityService.lambdaUpdate()
+                .eq(Activity::getId, register.getActivityId())
+                .setSql("signup_count = signup_count - 1")
+                .update();
     }
 }
