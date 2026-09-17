@@ -1,1 +1,0 @@
-import{get as r,put as e,del as n}from"./request-BCVwBykc.js";function i(){return r("/user/info")}function s(t){return e("/user/info",t)}function a(t){return e("/user/password",t)}function c(t){return r("/user/activity/list",t)}function o(t){return n(`/user/activity/cancel/${t}`)}export{c as a,a as b,o as c,i as g,s as u};
