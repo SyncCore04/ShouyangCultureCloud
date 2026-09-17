@@ -23,6 +23,14 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // 自动导入全局 SCSS 变量，每个组件的 scoped style 都能直接使用
+        additionalData: `@import "@/assets/styles/variables.scss";`
+      }
+    }
+  },
   server: {
     port: 5173,
     open: true,

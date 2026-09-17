@@ -1,195 +1,216 @@
 <template>
   <footer class="site-footer">
-    <div class="footer-inner container">
+    <div class="footer-container">
+      <!-- 三列内容 -->
       <div class="footer-content">
         <!-- 关于我们 -->
-        <div class="footer-section">
-          <h4 class="footer-title">关于我们</h4>
-          <p class="footer-desc">
-            寿阳文旅云是寿阳县公共文旅服务平台，致力于为广大群众提供便捷、高效的文化和旅游服务，推动文旅融合发展。
+        <div class="footer-column">
+          <h4 class="column-title">关于我们</h4>
+          <p class="column-text">
+            寿阳文旅云是寿阳县官方文化旅游综合服务平台，致力于为游客和市民提供便捷的文旅资讯、在线预订、活动报名等一站式服务，让文化旅游触手可及。
           </p>
-        </div>
-
-        <!-- 快速链接 -->
-        <div class="footer-section">
-          <h4 class="footer-title">快速链接</h4>
-          <ul class="footer-links">
-            <li><router-link to="/news">文旅动态</router-link></li>
-            <li><router-link to="/service/activity">活动报名</router-link></li>
-            <li><router-link to="/culture/heritage">非遗文化</router-link></li>
-            <li><router-link to="/travel/scenic">景点推荐</router-link></li>
-          </ul>
+          <div class="footer-logo">
+            <el-icon :size="20"><Picture /></el-icon>
+            <span>寿阳文旅云</span>
+          </div>
         </div>
 
         <!-- 联系方式 -->
-        <div class="footer-section">
-          <h4 class="footer-title">联系方式</h4>
-          <ul class="footer-contact">
-            <li>
-              <el-icon><Location /></el-icon>
-              <span>山西省晋中市寿阳县</span>
-            </li>
+        <div class="footer-column">
+          <h4 class="column-title">联系方式</h4>
+          <ul class="contact-list">
             <li>
               <el-icon><Phone /></el-icon>
-              <span>0354-1234567</span>
+              <span>服务热线：0354-12345678</span>
             </li>
             <li>
               <el-icon><Message /></el-icon>
-              <span>sywenlv@example.com</span>
+              <span>邮箱：service@shouyang.gov.cn</span>
+            </li>
+            <li>
+              <el-icon><Location /></el-icon>
+              <span>地址：山西省晋中市寿阳县朝阳街</span>
             </li>
             <li>
               <el-icon><Clock /></el-icon>
-              <span>周一至周五 8:30-17:30</span>
+              <span>工作时间：周一至周五 9:00-17:00</span>
             </li>
           </ul>
         </div>
 
-        <!-- 关注我们 -->
-        <div class="footer-section">
-          <h4 class="footer-title">关注我们</h4>
-          <div class="qrcode-placeholder">
-            <el-icon :size="48" color="#90a4ae"><Picture /></el-icon>
-            <p>扫码关注公众号</p>
+        <!-- 快速链接 -->
+        <div class="footer-column">
+          <h4 class="column-title">快速链接</h4>
+          <div class="quick-links">
+            <router-link to="/news">文旅动态</router-link>
+            <router-link to="/service/ticket">票务预订</router-link>
+            <router-link to="/service/activity">活动报名</router-link>
+            <router-link to="/culture/pavilion">数字展馆</router-link>
+            <router-link to="/culture/heritage">非遗文化</router-link>
+            <router-link to="/travel/scenic">景点推荐</router-link>
+            <router-link to="/travel/food">特色美食</router-link>
+            <router-link to="/travel/guide">旅游攻略</router-link>
+            <router-link to="/org">文旅单位</router-link>
+            <router-link to="/search">站内搜索</router-link>
           </div>
         </div>
       </div>
 
-      <!-- 底部版权 -->
+      <!-- 底部版权信息 -->
       <div class="footer-bottom">
-        <p>Copyright © 2024 寿阳文旅云 版权所有</p>
-        <p>
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京ICP备11017824号-4</a>
-          <span class="sep">|</span>
-          技术支持：超星集团
-        </p>
+        <div class="bottom-text">
+          <span>© 2024 寿阳文旅云 版权所有</span>
+          <span class="separator">|</span>
+          <span>晋ICP备XXXXXXXX号</span>
+          <span class="separator">|</span>
+          <span>晋公网安备 XXXXXXXXXXXXX号</span>
+        </div>
+        <div class="bottom-text">
+          <span>技术支持：寿阳县文化和旅游局</span>
+          <span class="separator">|</span>
+          <span>网站标识码：XXXXXXXXXX</span>
+        </div>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup>
-// 页脚组件
+import { Picture, Phone, Message, Location, Clock } from '@element-plus/icons-vue'
 </script>
 
 <style lang="scss" scoped>
 .site-footer {
-  background: linear-gradient(135deg, $primary-dark 0%, #0f1a2e 100%);
-  color: rgba(255, 255, 255, 0.75);
+  background: #1a2a4a;
+  color: #b0bec5;
   margin-top: 40px;
 }
 
-.footer-inner {
-  padding: 40px 16px 0;
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
+/* 三列内容 */
 .footer-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr 1fr;
+  display: flex;
+  justify-content: space-between;
+  padding: 40px 0 30px;
   gap: 40px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.footer-section {
-  .footer-title {
-    color: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    position: relative;
-    padding-bottom: 8px;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 30px;
-      height: 2px;
-      background: $primary-light;
-    }
-  }
-
-  .footer-desc {
-    font-size: 13px;
-    line-height: 1.8;
-    color: rgba(255, 255, 255, 0.6);
-  }
+.footer-column {
+  flex: 1;
 }
 
-.footer-links {
-  li {
-    margin-bottom: 10px;
+.column-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #4a6fa5;
+  display: inline-block;
+}
 
-    a {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 13px;
-      transition: color $transition-fast;
+.column-text {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #90a4ae;
+  margin-bottom: 16px;
+}
 
-      &:hover {
-        color: #fff;
-      }
-    }
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+
+  .el-icon {
+    color: #4a6fa5;
   }
 }
 
-.footer-contact {
+/* 联系方式 */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
   li {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
+    color: #90a4ae;
+    line-height: 1.5;
 
     .el-icon {
-      color: $primary-light;
+      margin-top: 2px;
+      color: #4a6fa5;
       flex-shrink: 0;
     }
   }
 }
 
-.qrcode-placeholder {
-  width: 100px;
-  height: 100px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: $border-radius;
+/* 快速链接 */
+.quick-links {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
 
-  p {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
+  a {
+    color: #90a4ae;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #fff;
+    }
   }
 }
 
+/* 底部版权 */
 .footer-bottom {
+  border-top: 1px solid #2c3e6b;
   padding: 20px 0;
   text-align: center;
+}
+
+.bottom-text {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+  color: #607d8b;
+  line-height: 2;
 
-  p {
-    margin-bottom: 4px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
+  .separator {
+    margin: 0 10px;
+    color: #37474f;
   }
+}
 
-  a {
-    color: rgba(255, 255, 255, 0.4);
-
-    &:hover {
-      color: rgba(255, 255, 255, 0.7);
-    }
+/* 响应式 */
+@media (max-width: 992px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 30px;
   }
+}
 
-  .sep {
-    margin: 0 8px;
+@media (max-width: 576px) {
+  .bottom-text {
+    .separator {
+      display: none;
+    }
+
+    span {
+      display: block;
+      margin: 4px 0;
+    }
   }
 }
 </style>

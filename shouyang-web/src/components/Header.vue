@@ -1,40 +1,50 @@
 <template>
-  <header class="site-header" :class="{ scrolled: isScrolled }">
-    <div class="header-inner container">
-      <!-- Logo -->
-      <div class="logo" @click="goHome">
-        <el-icon :size="28" color="#fff"><Picture /></el-icon>
-        <span class="logo-text">寿阳文旅云</span>
+  <header class="site-header" :class="{ 'is-scrolled': isScrolled }">
+    <div class="header-container">
+      <!-- 左侧：Logo + 网站名称 -->
+      <div class="header-left" @click="goHome">
+        <div class="logo">
+          <el-icon :size="28" color="#2c3e6b"><Picture /></el-icon>
+        </div>
+        <span class="site-name">寿阳文旅云</span>
       </div>
 
-      <!-- 主导航 -->
-      <nav class="main-nav">
+      <!-- 中间：主导航菜单（桌面端） -->
+      <nav class="header-nav">
         <router-link
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
           class="nav-item"
           :class="{ active: isActive(item) }"
+          @mouseenter="item.children && (activeDropdown = item.path)"
+          @mouseleave="activeDropdown = ''"
         >
-          {{ item.name }}
-          <!-- 下拉菜单 -->
-          <template v-if="item.children">
-            <ul class="dropdown">
-              <li v-for="child in item.children" :key="child.path">
-                <router-link :to="child.path">{{ child.name }}</router-link>
-              </li>
-            </ul>
-          </template>
+          <span class="nav-text">{{ item.name }}</span>
+          <el-icon v-if="item.children" class="nav-arrow"><ArrowDown /></el-icon>
+
+          <!-- 下拉子菜单 -->
+          <div v-if="item.children && activeDropdown === item.path" class="dropdown-menu">
+            <router-link
+              v-for="child in item.children"
+              :key="child.path"
+              :to="child.path"
+              class="dropdown-item"
+            >
+              <el-icon class="dropdown-icon"><component :is="child.icon" /></el-icon>
+              <span>{{ child.name }}</span>
+            </router-link>
+          </div>
         </router-link>
       </nav>
 
-      <!-- 右侧操作区 -->
+      <!-- 右侧：搜索 + 用户操作 -->
       <div class="header-right">
         <!-- 搜索框 -->
         <div class="search-box">
           <el-input
             v-model="searchKeyword"
-            placeholder="搜索文旅资讯..."
+            placeholder="搜索景点、美食、资讯..."
             size="default"
             clearable
             @keyup.enter="handleSearch"
@@ -45,33 +55,75 @@
           </el-input>
         </div>
 
-        <!-- 用户区 -->
-        <div class="user-area">
-          <template v-if="userStore.isLogin">
-            <el-dropdown trigger="hover" @command="handleUserCommand">
-              <div class="user-info">
-                <el-avatar :size="32" :src="userStore.avatar">
-                  {{ userStore.nickname.charAt(0) }}
-                </el-avatar>
-                <span class="username">{{ userStore.nickname }}</span>
-                <el-icon><ArrowDown /></el-icon>
-              </div>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                  <el-dropdown-item command="favorite">我的收藏</el-dropdown-item>
-                  <el-dropdown-item command="activity">我的报名</el-dropdown-item>
-                  <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </template>
-          <template v-else>
-            <router-link to="/login" class="auth-link">登录</router-link>
-            <span class="divider">|</span>
-            <router-link to="/register" class="auth-link">注册</router-link>
-          </template>
+        <!-- 未登录：登录/注册按钮 -->
+        <template v-if="!userStore.isLogin">
+          <el-button type="primary" plain class="auth-btn" @click="$router.push('/login')">
+            登录
+          </el-button>
+          <el-button type="primary" class="auth-btn" @click="$router.push('/register')">
+            注册
+          </el-button>
+        </template>
+
+        <!-- 已登录：用户头像 + 下拉菜单 -->
+        <div v-else class="user-menu" @mouseenter="userDropdownVisible = true" @mouseleave="userDropdownVisible = false">
+          <div class="user-info">
+            <el-avatar :size="32" :src="userStore.avatar">
+              {{ userStore.nickname.charAt(0) }}
+            </el-avatar>
+            <span class="user-nickname">{{ userStore.nickname }}</span>
+            <el-icon class="user-arrow"><ArrowDown /></el-icon>
+          </div>
+          <div v-if="userDropdownVisible" class="user-dropdown">
+            <router-link to="/user" class="user-dropdown-item">
+              <el-icon><User /></el-icon>
+              <span>个人中心</span>
+            </router-link>
+            <router-link to="/user/favorite" class="user-dropdown-item">
+              <el-icon><Star /></el-icon>
+              <span>我的收藏</span>
+            </router-link>
+            <router-link to="/user/activity" class="user-dropdown-item">
+              <el-icon><Tickets /></el-icon>
+              <span>我的报名</span>
+            </router-link>
+            <div class="dropdown-divider"></div>
+            <div class="user-dropdown-item" @click="handleLogout">
+              <el-icon><SwitchButton /></el-icon>
+              <span>退出登录</span>
+            </div>
+          </div>
         </div>
+
+        <!-- 移动端汉堡菜单按钮 -->
+        <div class="mobile-menu-btn" @click="mobileMenuVisible = !mobileMenuVisible">
+          <el-icon :size="24"><Menu /></el-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- 移动端导航菜单 -->
+    <div v-if="mobileMenuVisible" class="mobile-nav">
+      <router-link
+        v-for="item in navItems"
+        :key="item.path"
+        :to="item.path"
+        class="mobile-nav-item"
+        @click="mobileMenuVisible = false"
+      >
+        {{ item.name }}
+      </router-link>
+      <div class="mobile-nav-sub" v-for="item in navItems.filter(i => i.children)" :key="item.path">
+        <div class="mobile-nav-title">{{ item.name }}</div>
+        <router-link
+          v-for="child in item.children"
+          :key="child.path"
+          :to="child.path"
+          class="mobile-nav-child"
+          @click="mobileMenuVisible = false"
+        >
+          {{ child.name }}
+        </router-link>
       </div>
     </div>
   </header>
@@ -79,16 +131,41 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import {
+  Picture, ArrowDown, Search, User, Star, SwitchButton, Menu,
+  Ticket, OfficeBuilding, Calendar, Monitor, ShoppingCart,
+  Place, Dish, House, Compass, Collection
+} from '@element-plus/icons-vue'
 
-const router = useRouter()
 const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 
-const searchKeyword = ref('')
+// 滚动状态
 const isScrolled = ref(false)
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 10
+}
+onMounted(() => window.addEventListener('scroll', handleScroll))
+onUnmounted(() => window.removeEventListener('scroll', handleScroll))
+
+// 搜索
+const searchKeyword = ref('')
+const handleSearch = () => {
+  if (!searchKeyword.value.trim()) {
+    ElMessage.warning('请输入搜索关键词')
+    return
+  }
+  router.push({ path: '/search', query: { keyword: searchKeyword.value.trim() } })
+}
+
+// 下拉菜单状态
+const activeDropdown = ref('')
+const userDropdownVisible = ref(false)
+const mobileMenuVisible = ref(false)
 
 // 导航菜单配置
 const navItems = [
@@ -96,216 +173,200 @@ const navItems = [
   { name: '文旅动态', path: '/news' },
   {
     name: '文旅服务',
-    path: '/service/ticket',
+    path: '/service',
     children: [
-      { name: '票务预订', path: '/service/ticket' },
-      { name: '场馆预订', path: '/service/venue' },
-      { name: '活动报名', path: '/service/activity' },
-      { name: '文旅日历', path: '/service/calendar' }
+      { name: '票务预订', path: '/service/ticket', icon: Ticket },
+      { name: '场馆预订', path: '/service/venue', icon: OfficeBuilding },
+      { name: '活动报名', path: '/service/activity', icon: Calendar },
+      { name: '文旅日历', path: '/service/calendar', icon: Calendar }
     ]
   },
   {
     name: '文旅时空',
-    path: '/culture/pavilion',
+    path: '/culture',
     children: [
-      { name: '数字展馆', path: '/culture/pavilion' },
-      { name: '非遗文化', path: '/culture/heritage' },
-      { name: '文创商城', path: '/culture/product' }
+      { name: '数字展馆', path: '/culture/pavilion', icon: Monitor },
+      { name: '非遗文化', path: '/culture/heritage', icon: Collection },
+      { name: '文创商城', path: '/culture/product', icon: ShoppingCart }
     ]
   },
   {
     name: '畅游寿阳',
-    path: '/travel/scenic',
+    path: '/travel',
     children: [
-      { name: '景点推荐', path: '/travel/scenic' },
-      { name: '特色美食', path: '/travel/food' },
-      { name: '民宿酒店', path: '/travel/hotel' },
-      { name: '旅游攻略', path: '/travel/guide' }
+      { name: '景点推荐', path: '/travel/scenic', icon: Place },
+      { name: '特色美食', path: '/travel/food', icon: Dish },
+      { name: '民宿酒店', path: '/travel/hotel', icon: House },
+      { name: '旅游攻略', path: '/travel/guide', icon: Compass }
     ]
   },
   { name: '文旅单位', path: '/org' }
 ]
 
-// 判断导航项是否激活
-function isActive(item) {
-  if (item.children) {
-    return item.children.some((child) => route.path.startsWith(child.path.split('/').slice(0, 3).join('/')))
-  }
-  if (item.path === '/') {
-    return route.path === '/'
-  }
+// 判断导航项是否高亮（包含子路径）
+const isActive = (item) => {
+  if (item.path === '/') return route.path === '/'
   return route.path.startsWith(item.path)
 }
 
-// 搜索
-function handleSearch() {
-  if (!searchKeyword.value.trim()) {
-    ElMessage.warning('请输入搜索关键词')
-    return
-  }
-  router.push({ path: '/search', query: { keyword: searchKeyword.value } })
+// 返回首页
+const goHome = () => router.push('/')
+
+// 退出登录
+const handleLogout = () => {
+  ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    userStore.logout()
+    ElMessage.success('已退出登录')
+    router.push('/')
+  }).catch(() => {})
 }
-
-// 跳转首页
-function goHome() {
-  router.push('/')
-}
-
-// 用户下拉菜单操作
-function handleUserCommand(command) {
-  switch (command) {
-    case 'profile':
-      router.push('/user')
-      break
-    case 'favorite':
-      router.push('/user/favorite')
-      break
-    case 'activity':
-      router.push('/user/activity')
-      break
-    case 'logout':
-      ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        userStore.logout()
-        ElMessage.success('已退出登录')
-        router.push('/')
-      }).catch(() => {})
-      break
-  }
-}
-
-// 滚动监听
-function handleScroll() {
-  isScrolled.value = window.scrollY > 10
-}
-
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
 </script>
 
 <style lang="scss" scoped>
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  background: linear-gradient(135deg, $primary-dark 0%, $primary-color 100%);
-  box-shadow: $shadow-md;
-  transition: all $transition-base;
+  background: #fff;
+  transition: all 0.3s ease;
 
-  &.scrolled {
-    box-shadow: $shadow-lg;
+  &.is-scrolled {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   }
 }
 
-.header-inner {
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 64px;
   display: flex;
   align-items: center;
-  height: 64px;
-  gap: 24px;
+  justify-content: space-between;
+  padding: 0 20px;
 }
 
-.logo {
+/* 左侧 Logo */
+.header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
   cursor: pointer;
   flex-shrink: 0;
 
-  .logo-text {
+  .logo {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #2c3e6b, #4a6fa5);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+
+    .el-icon {
+      color: #fff !important;
+    }
+  }
+
+  .site-name {
     font-size: 20px;
-    font-weight: bold;
-    color: #fff;
-    letter-spacing: 2px;
+    font-weight: 700;
+    color: #2c3e6b;
+    letter-spacing: 1px;
   }
 }
 
-.main-nav {
+/* 中间导航 */
+.header-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  height: 100%;
   flex: 1;
+  justify-content: center;
 }
 
 .nav-item {
   position: relative;
-  padding: 0 16px;
+  display: flex;
+  align-items: center;
   height: 64px;
-  line-height: 64px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 15px;
-  cursor: pointer;
-  transition: all $transition-fast;
+  padding: 0 18px;
+  color: #455a64;
   text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
 
-  &:hover,
+  &:hover {
+    color: #2c3e6b;
+  }
+
   &.active {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-  }
+    color: #2c3e6b;
+    font-weight: 600;
 
-  &.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30px;
-    height: 3px;
-    background: #fff;
-    border-radius: 2px;
-  }
-
-  // 下拉菜单
-  .dropdown {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 140px;
-    background: #fff;
-    border-radius: 0 0 $border-radius $border-radius;
-    box-shadow: $shadow-lg;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(-10px);
-    transition: all $transition-fast;
-    z-index: 1001;
-
-    li {
-      a {
-        display: block;
-        padding: 10px 20px;
-        color: $text-regular;
-        font-size: 14px;
-        white-space: nowrap;
-
-        &:hover {
-          background: $primary-bg;
-          color: $primary-color;
-        }
-      }
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 3px;
+      background: #2c3e6b;
+      border-radius: 2px;
     }
   }
 
-  &:hover .dropdown {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
+  .nav-arrow {
+    margin-left: 4px;
+    font-size: 12px;
   }
 }
 
+/* 下拉菜单 */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 160px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  padding: 8px 0;
+  z-index: 1001;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: #455a64;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f0f4fa;
+    color: #2c3e6b;
+  }
+
+  .dropdown-icon {
+    margin-right: 8px;
+    font-size: 16px;
+  }
+}
+
+/* 右侧操作区 */
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
@@ -313,73 +374,164 @@ onUnmounted(() => {
   width: 220px;
 
   :deep(.el-input__wrapper) {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: none;
     border-radius: 20px;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    .el-input__inner {
-      color: #fff;
-
-      &::placeholder {
-        color: rgba(255, 255, 255, 0.6);
-      }
-    }
-
-    .el-input__prefix {
-      color: rgba(255, 255, 255, 0.7);
-    }
   }
 }
 
-.user-area {
-  display: flex;
-  align-items: center;
+.auth-btn {
+  border-radius: 20px;
+  padding: 8px 20px;
 }
 
-.auth-link {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
+/* 用户菜单 */
+.user-menu {
+  position: relative;
   cursor: pointer;
-
-  &:hover {
-    color: #fff;
-  }
-}
-
-.divider {
-  color: rgba(255, 255, 255, 0.4);
-  margin: 0 8px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
   padding: 4px 8px;
   border-radius: 20px;
-  transition: background $transition-fast;
+  transition: background 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #f0f4fa;
   }
 
-  .username {
-    color: #fff;
+  .user-nickname {
     font-size: 14px;
+    color: #455a64;
     max-width: 80px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .el-icon {
-    color: rgba(255, 255, 255, 0.7);
+  .user-arrow {
     font-size: 12px;
+    color: #90a4ae;
+  }
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  padding: 8px 0;
+  z-index: 1001;
+}
+
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: #455a64;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f0f4fa;
+    color: #2c3e6b;
+  }
+
+  .el-icon {
+    margin-right: 8px;
+  }
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #eceff1;
+  margin: 6px 0;
+}
+
+/* 移动端汉堡按钮 */
+.mobile-menu-btn {
+  display: none;
+  cursor: pointer;
+  color: #2c3e6b;
+}
+
+/* 移动端导航 */
+.mobile-nav {
+  display: none;
+  background: #fff;
+  border-top: 1px solid #eceff1;
+  padding: 10px 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.mobile-nav-item {
+  display: block;
+  padding: 12px 0;
+  color: #455a64;
+  text-decoration: none;
+  font-size: 15px;
+  border-bottom: 1px solid #f5f7fa;
+}
+
+.mobile-nav-sub {
+  padding: 8px 0;
+
+  .mobile-nav-title {
+    font-size: 13px;
+    color: #90a4ae;
+    padding: 8px 0 4px;
+  }
+
+  .mobile-nav-child {
+    display: block;
+    padding: 8px 0 8px 16px;
+    color: #607d8b;
+    text-decoration: none;
+    font-size: 14px;
+  }
+}
+
+/* 响应式 */
+@media (max-width: 992px) {
+  .header-nav {
+    display: none;
+  }
+
+  .search-box {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .mobile-nav {
+    display: block;
+  }
+
+  .auth-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .site-name {
+    font-size: 16px !important;
+  }
+
+  .user-nickname {
+    display: none;
+  }
+
+  .auth-btn {
+    display: none;
   }
 }
 </style>
