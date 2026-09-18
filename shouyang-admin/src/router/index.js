@@ -64,7 +64,7 @@ const routes = [
       {
         path: 'heritage',
         name: 'Heritage',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Heritage/index.vue'),
         meta: { title: '非遗管理', icon: 'Star' }
       },
       {
