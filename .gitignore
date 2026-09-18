@@ -127,3 +127,4 @@ vite.config.*.timestamp-*
 *.rar
 *.7z
 .history/
+23/
