@@ -6,7 +6,7 @@
         <el-breadcrumb separator="/">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item :to="{ path: '/news' }">文旅动态</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="newsDetail.categoryName">{{ newsDetail.categoryName }}</el-breadcrumb-item>
+          <el-breadcrumb-item v-if="newsDetail?.categoryName">{{ newsDetail?.categoryName }}</el-breadcrumb-item>
           <el-breadcrumb-item>详情</el-breadcrumb-item>
         </el-breadcrumb>
       </div>

@@ -11,31 +11,41 @@
 
       <!-- 中间：主导航菜单（桌面端） -->
       <nav class="header-nav">
-        <router-link
-          v-for="item in navItems"
-          :key="item.path"
-          :to="item.path"
-          class="nav-item"
-          :class="{ active: isActive(item) }"
-          @mouseenter="item.children && (activeDropdown = item.path)"
-          @mouseleave="activeDropdown = ''"
-        >
-          <span class="nav-text">{{ item.name }}</span>
-          <el-icon v-if="item.children" class="nav-arrow"><ArrowDown /></el-icon>
+        <template v-for="item in navItems" :key="item.path">
+          <!-- 没有子菜单的：直接用 router-link -->
+          <router-link
+            v-if="!item.children"
+            :to="item.path"
+            class="nav-item"
+            :class="{ active: isActive(item) }"
+          >
+            <span class="nav-text">{{ item.name }}</span>
+          </router-link>
 
-          <!-- 下拉子菜单 -->
-          <div v-if="item.children && activeDropdown === item.path" class="dropdown-menu">
-            <router-link
-              v-for="child in item.children"
-              :key="child.path"
-              :to="child.path"
-              class="dropdown-item"
-            >
-              <el-icon class="dropdown-icon"><component :is="child.icon" /></el-icon>
-              <span>{{ child.name }}</span>
-            </router-link>
+          <!-- 有子菜单的：用普通 div，只 hover 显示下拉，不点击跳转 -->
+          <div
+            v-else
+            class="nav-item has-dropdown"
+            @mouseenter="activeDropdown = item.path"
+            @mouseleave="activeDropdown = ''"
+          >
+            <span class="nav-text">{{ item.name }}</span>
+            <el-icon class="nav-arrow"><ArrowDown /></el-icon>
+
+            <!-- 下拉子菜单 -->
+            <div v-if="activeDropdown === item.path" class="dropdown-menu">
+              <router-link
+                v-for="child in item.children"
+                :key="child.path"
+                :to="child.path"
+                class="dropdown-item"
+              >
+                <el-icon class="dropdown-icon"><component :is="child.icon" /></el-icon>
+                <span>{{ child.name }}</span>
+              </router-link>
+            </div>
           </div>
-        </router-link>
+        </template>
       </nav>
 
       <!-- 右侧：搜索 + 用户操作 -->
@@ -300,6 +310,7 @@ const handleLogout = () => {
   text-decoration: none;
   font-size: 15px;
   transition: color 0.2s;
+  cursor: pointer;
 
   &:hover {
     color: #2c3e6b;
@@ -328,6 +339,23 @@ const handleLogout = () => {
   }
 }
 
+/* 有下拉菜单的项：hover 时也显示下划线效果 */
+.nav-item.has-dropdown:hover {
+  color: #2c3e6b;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: #2c3e6b;
+    border-radius: 2px;
+  }
+}
+
 /* 下拉菜单 */
 .dropdown-menu {
   position: absolute;
@@ -340,6 +368,16 @@ const handleLogout = () => {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
   padding: 8px 0;
   z-index: 1001;
+}
+
+/* 透明连接区，防止鼠标移到下拉菜单时触发 mouseleave */
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
 }
 
 .dropdown-item {

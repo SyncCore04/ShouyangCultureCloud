@@ -1,0 +1,40 @@
+# ============================================================
+# 开发环境配置模板
+# ============================================================
+# 使用方法：
+# 1. 复制本文件为 application-dev.yml
+# 2. 修改数据库密码、用户名等配置为你自己的
+# ============================================================
+
+spring:
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shouyang_culture?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: "your-password"  # 改成你自己的数据库密码
+    # 连接池配置（HikariCP，Spring Boot 默认）
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: ShouyangHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+# 开发环境打印 SQL
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# Knife4j 开发环境开启
+knife4j:
+  enable: true
+  production: false
+
+# 日志级别
+logging:
+  level:
+    com.shouyang: debug
+    com.shouyang.mapper: debug

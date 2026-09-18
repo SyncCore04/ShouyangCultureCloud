@@ -1,0 +1,41 @@
+# ============================================================
+# 生产环境配置模板
+# ============================================================
+# 使用方法：
+# 1. 复制本文件为 application-prod.yml
+# 2. 修改数据库密码、用户名等配置为你自己的
+# 3. 或者通过环境变量覆盖（推荐）
+# ============================================================
+
+spring:
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shouyang_culture?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:your-production-password}
+    # 连接池配置
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: ShouyangHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+# 生产环境关闭 SQL 打印
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# Knife4j 生产环境关闭
+knife4j:
+  enable: false
+  production: true
+
+# 日志级别
+logging:
+  level:
+    com.shouyang: info
+    com.shouyang.mapper: warn

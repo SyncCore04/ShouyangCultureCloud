@@ -58,7 +58,7 @@ const routes = [
       {
         path: 'pavilion',
         name: 'Pavilion',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Pavilion/index.vue'),
         meta: { title: '展馆管理', icon: 'PictureFilled' }
       },
       {
@@ -70,7 +70,7 @@ const routes = [
       {
         path: 'product',
         name: 'Product',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Product/index.vue'),
         meta: { title: '文创管理', icon: 'Goods' }
       },
       {
@@ -94,13 +94,13 @@ const routes = [
       {
         path: 'guide',
         name: 'Guide',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Guide/index.vue'),
         meta: { title: '攻略管理', icon: 'Guide' }
       },
       {
         path: 'org',
         name: 'Org',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Org/index.vue'),
         meta: { title: '单位管理', icon: 'Building' }
       },
       {
