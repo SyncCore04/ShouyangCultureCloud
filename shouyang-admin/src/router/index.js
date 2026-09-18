@@ -40,7 +40,7 @@ const routes = [
       {
         path: 'ticket',
         name: 'Ticket',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Ticket/index.vue'),
         meta: { title: '票务管理', icon: 'Ticket' }
       },
       {
