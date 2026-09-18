@@ -22,7 +22,7 @@ const routes = [
       {
         path: 'banner',
         name: 'Banner',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Banner/index.vue'),
         meta: { title: '轮播图管理', icon: 'Picture' }
       },
       {

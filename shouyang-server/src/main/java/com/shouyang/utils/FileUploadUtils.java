@@ -71,7 +71,14 @@ public class FileUploadUtils {
 
         // 7. 构建相对路径和完整存储路径
         String relativePath = datePath + "/" + newFilename;
-        String fullPath = basePath + relativePath;
+
+        // 将基础路径转换为绝对路径，确保 transferTo 能正确定位
+        // 修复相对路径导致的上传失败问题
+        File baseDir = new File(basePath);
+        if (!baseDir.isAbsolute()) {
+            baseDir = baseDir.getAbsoluteFile();
+        }
+        String fullPath = baseDir.getAbsolutePath() + File.separator + relativePath;
 
         // 8. 创建目标目录（如果不存在）
         File destFile = new File(fullPath);
@@ -79,7 +86,7 @@ public class FileUploadUtils {
         if (!parentDir.exists()) {
             boolean created = parentDir.mkdirs();
             if (!created) {
-                throw new BusinessException(ResultCode.FILE_UPLOAD_FAIL);
+                throw new BusinessException(ResultCode.FILE_UPLOAD_FAIL + "：无法创建目录 " + parentDir.getAbsolutePath());
             }
         }
 
@@ -87,7 +94,7 @@ public class FileUploadUtils {
         try {
             file.transferTo(destFile);
         } catch (IOException e) {
-            throw new BusinessException(ResultCode.FILE_UPLOAD_FAIL);
+            throw new BusinessException(ResultCode.FILE_UPLOAD_FAIL + "：" + e.getMessage());
         }
 
         // 10. 返回可访问的 URL 路径

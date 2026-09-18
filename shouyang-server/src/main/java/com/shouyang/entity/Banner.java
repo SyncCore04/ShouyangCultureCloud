@@ -37,10 +37,10 @@ public class Banner implements Serializable {
     private String title;
 
     /**
-     * 图片URL
+     * 封面图URL
      */
-    @TableField("image")
-    private String image;
+    @TableField("cover_image")
+    private String coverImage;
 
     /**
      * 跳转链接
