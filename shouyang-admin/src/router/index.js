@@ -46,7 +46,7 @@ const routes = [
       {
         path: 'venue',
         name: 'Venue',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Venue/index.vue'),
         meta: { title: '场馆管理', icon: 'OfficeBuilding' }
       },
       {
