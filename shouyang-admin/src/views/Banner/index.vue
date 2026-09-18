@@ -117,6 +117,7 @@
       :title="isEdit ? '编辑轮播图' : '新增轮播图'"
       width="600px"
       :close-on-click-modal="false"
+      :close-on-press-escape="false"
       destroy-on-close
     >
       <el-form
