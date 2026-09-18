@@ -50,7 +50,7 @@ public class FoodAdminController {
     public Result<Food> detail(@PathVariable Long id) {
         return Result.success(foodService.getById(id));
     }
-
+    //没加价格和地址的表，下次改一下
     /**
      * 新增
      */

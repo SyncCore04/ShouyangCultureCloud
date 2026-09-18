@@ -138,6 +138,7 @@
       :title="isEdit ? '编辑资讯' : '新增资讯'"
       width="800px"
       :close-on-click-modal="false"
+      :close-on-press-escape="false"
       destroy-on-close
     >
       <el-form
@@ -254,7 +255,7 @@ const rules = {
 const loadList = async () => {
   loading.value = true
   try {
-    const res = await get('/news/list', {
+    const res = await get('/admin/news/list', {
       page: pagination.page,
       size: pagination.size,
       keyword: searchForm.keyword || undefined,
@@ -273,7 +274,7 @@ const loadList = async () => {
 // ========== 加载分类列表 ==========
 const loadCategoryList = async () => {
   try {
-    const res = await get('/category/all')
+    const res = await get('/admin/category/all')
     categoryList.value = res.data || []
   } catch (e) {
     console.error('加载分类失败:', e)
@@ -333,10 +334,10 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     submitting.value = true
     if (isEdit.value) {
-      await put('/news', form)
+      await put('/admin/news', form)
       ElMessage.success('修改成功')
     } else {
-      await post('/news', form)
+      await post('/admin/news', form)
       ElMessage.success('新增成功')
     }
     dialogVisible.value = false
@@ -358,7 +359,7 @@ const handleDelete = (row) => {
     type: 'warning'
   }).then(async () => {
     try {
-      await del(`/news/${row.id}`)
+      await del(`/admin/news/${row.id}`)
       ElMessage.success('删除成功')
       loadList()
     } catch (e) {
@@ -371,7 +372,7 @@ const handleDelete = (row) => {
 const handleStatusChange = async (row, val) => {
   const newStatus = val ? 1 : 0
   try {
-    await put('/news', { id: row.id, status: newStatus })
+    await put('/admin/news', { id: row.id, status: newStatus })
     row.status = newStatus
     ElMessage.success(val ? '已发布' : '已下架')
   } catch (e) {

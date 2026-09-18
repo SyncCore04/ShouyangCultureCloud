@@ -63,7 +63,7 @@ DROP TABLE IF EXISTS `banner`;
 CREATE TABLE `banner` (
   `id`          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '轮播图ID',
   `title`       VARCHAR(100) DEFAULT NULL COMMENT '标题',
-  `image`       VARCHAR(255) NOT NULL COMMENT '图片URL',
+  `cover_image` VARCHAR(255) DEFAULT NULL COMMENT '封面图URL',
   `link_url`    VARCHAR(255) DEFAULT NULL COMMENT '跳转链接',
   `sort`        INT          DEFAULT 0 COMMENT '排序（越小越靠前）',
   `status`      TINYINT      DEFAULT 1 COMMENT '状态 0禁用 1启用',
@@ -416,7 +416,7 @@ INSERT INTO `news_category` (`name`, `sort`, `status`) VALUES
 ('旅游美文', 6, 1);
 
 -- 轮播图（3张，使用占位图）
-INSERT INTO `banner` (`title`, `image`, `link_url`, `sort`, `status`) VALUES
+INSERT INTO `banner` (`title`, `cover_image`, `link_url`, `sort`, `status`) VALUES
 ('寿阳文旅云欢迎您', 'https://picsum.photos/1200/400?random=1', '/news', 1, 1),
 ('炫彩非遗·魅力寿阳', 'https://picsum.photos/1200/400?random=2', '/culture/heritage', 2, 1),
 ('怡然见晋中 休闲寿阳游', 'https://picsum.photos/1200/400?random=3', '/travel/scenic', 3, 1);

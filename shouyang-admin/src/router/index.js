@@ -34,7 +34,7 @@ const routes = [
       {
         path: 'category',
         name: 'Category',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Category/index.vue'),
         meta: { title: '分类管理', icon: 'Menu' }
       },
       {
@@ -52,7 +52,7 @@ const routes = [
       {
         path: 'activity',
         name: 'Activity',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Activity/index.vue'),
         meta: { title: '活动管理', icon: 'Calendar' }
       },
       {
@@ -76,19 +76,19 @@ const routes = [
       {
         path: 'scenic',
         name: 'Scenic',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Scenic/index.vue'),
         meta: { title: '景点管理', icon: 'Location' }
       },
       {
         path: 'food',
         name: 'Food',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Food/index.vue'),
         meta: { title: '美食管理', icon: 'Food' }
       },
       {
         path: 'hotel',
         name: 'Hotel',
-        component: () => import('@/views/Placeholder.vue'),
+        component: () => import('@/views/Hotel/index.vue'),
         meta: { title: '酒店管理', icon: 'HomeFilled' }
       },
       {
