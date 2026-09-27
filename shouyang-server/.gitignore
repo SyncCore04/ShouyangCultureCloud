@@ -58,3 +58,6 @@ desktop.ini
 .env
 .env.local
 .env.*.local
+
+# ------文档------
+项目迁移指南.md
