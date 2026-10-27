@@ -34,6 +34,12 @@ const routes = [
         meta: { title: '票务预订' }
       },
       {
+        path: 'service/ticket/:id',
+        name: 'TicketDetail',
+        component: () => import('@/views/Service/TicketDetail.vue'),
+        meta: { title: '票务详情' }
+      },
+      {
         path: 'service/venue',
         name: 'VenueList',
         component: () => import('@/views/Service/VenueList.vue'),
@@ -197,6 +203,12 @@ const routes = [
             name: 'UserActivity',
             component: () => import('@/views/User/Activity.vue'),
             meta: { title: '我的报名', requireAuth: true }
+          },
+          {
+            path: 'ticket',
+            name: 'UserTicket',
+            component: () => import('@/views/User/Ticket.vue'),
+            meta: { title: '我的门票', requireAuth: true }
           },
           {
             path: 'password',

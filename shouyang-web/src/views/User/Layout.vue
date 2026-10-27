@@ -29,6 +29,10 @@
               <el-icon><Tickets /></el-icon>
               <span>我的报名</span>
             </el-menu-item>
+            <el-menu-item index="/user/ticket">
+              <el-icon><Ticket /></el-icon>
+              <span>我的门票</span>
+            </el-menu-item>
             <el-menu-item index="/user/password">
               <el-icon><Lock /></el-icon>
               <span>修改密码</span>
@@ -52,7 +56,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { User, Star, Tickets, Lock } from '@element-plus/icons-vue'
+import { User, Star, Tickets, Ticket, Lock } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 
 const route = useRoute()

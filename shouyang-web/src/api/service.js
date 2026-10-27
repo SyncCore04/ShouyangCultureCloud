@@ -56,6 +56,37 @@ export function getTicketDetail(id) {
   return get(`/ticket/${id}`)
 }
 
+/**
+ * 获取票务统计数据（可视化看板）
+ */
+export function getTicketStats() {
+  return get('/ticket/stats')
+}
+
+/**
+ * 门票预订（需登录）
+ * @param {Object} data - { ticketId, name, phone, quantity }
+ */
+export function orderTicket(data) {
+  return post('/ticket/order', data)
+}
+
+/**
+ * 我的门票列表（需登录）
+ * @param {Object} params - { page, size }
+ */
+export function getMyTicketList(params) {
+  return get('/ticket/my/list', params)
+}
+
+/**
+ * 取消门票预订（需登录，回补库存）
+ * @param {number} orderId - 订单ID
+ */
+export function cancelTicketOrder(orderId) {
+  return post(`/ticket/order/cancel/${orderId}`)
+}
+
 // ==================== 场馆 ====================
 
 /**

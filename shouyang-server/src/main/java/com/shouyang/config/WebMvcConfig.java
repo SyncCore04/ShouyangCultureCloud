@@ -51,7 +51,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/api/admin/**",          // 后台管理（排除登录）
                         "/api/favorite/**",       // 收藏
                         "/api/activity/register", // 活动报名
-                        "/api/activity/my/**"     // 我的报名
+                        "/api/activity/my/**",    // 我的报名
+                        "/api/ticket/order/**",   // 门票预订/取消
+                        "/api/ticket/my/**"       // 我的门票
                 )
                 // 白名单：不需要登录的路径
                 .excludePathPatterns(
