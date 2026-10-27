@@ -127,4 +127,8 @@ vite.config.*.timestamp-*
 *.rar
 *.7z
 .history/
+
+# Agent
 23/
+.screenshots/
+.trae/

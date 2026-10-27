@@ -83,7 +83,8 @@ Shouyang/
 │   │   ├── application.yml              # 主配置
 │   │   ├── application-dev.yml          # 开发环境配置
 │   │   └── application-prod.yml         # 生产环境配置
-│   └── pom.xml                          # Maven配置
+│   ├── pom.xml                          # Maven配置
+│   └── uploads/                         # 上传文件目录（运行时生成）
 │
 ├── shouyang-web/             # 前台用户端工程
 │   ├── src/
@@ -158,10 +159,8 @@ Shouyang/
 │   ├── shouyang_culture_init.sql        # 数据库初始化脚本
 │   ├── service_module_test_data.sql      # 文旅服务测试数据
 │   ├── culture_module_test_data.sql      # 文旅时空测试数据
-│   ├── 联调检查报告与测试用例清单.md     # 联调测试文档
-│   └── ...
+│   └── check_admin.sql                   # 管理员账号排查脚本
 │
-├── uploads/                    # 上传文件目录（运行时生成）
 └── README.md                   # 项目说明文档
 ```
 
@@ -177,7 +176,7 @@ Shouyang/
 | 用户认证 | 注册、登录、JWT身份认证 | ✅ |
 | 文旅动态 | 资讯列表、分类筛选、关键词搜索、资讯详情、热门资讯、相关推荐 | ✅ |
 | 畅游寿阳 | 景点/美食/酒店/攻略的列表和详情，等级/星级筛选 | ✅ |
-| 文旅服务 | 活动列表/详情/报名、我的报名、票务展示、场馆展示 | ✅ |
+| 文旅服务 | 活动列表/详情/报名、我的报名、文旅日历、票务展示、场馆展示 | ✅ |
 | 文旅时空 | 数字展馆、非遗文化（级别筛选）、文创商城（不做交易） | ✅ |
 | 文旅单位 | 单位列表、类型筛选（图书馆/文化馆/文化站/文化中心） | ✅ |
 | 用户中心 | 个人信息、头像上传、我的收藏、我的报名、修改密码 | ✅ |
@@ -213,7 +212,7 @@ Shouyang/
 
 ### 开发环境
 
-- **JDK**：17（项目配置 java.version=1.8，兼容 JDK 17 运行）
+- **JDK**：17（Maven 编译目标 Java 9，兼容 JDK 17 运行）
 - **Maven**：3.6+
 - **Node.js**：16+（推荐 18+）
 - **npm**：8+（推荐使用淘宝镜像）
@@ -319,8 +318,7 @@ npm run dev
 | 角色 | 账号 | 密码 | 说明 |
 |------|------|------|------|
 | 超级管理员 | admin | 123456 | 后台管理系统登录 |
-| 前台测试用户 | testuser2 | 123456 | 前台用户端登录 |
-| 前台测试用户 | test | 123456 | 旧账号（密码可能不兼容） |
+| 前台测试用户 | test | 123456 | 前台用户端登录（如密码不兼容，请在前台重新注册） |
 
 > 管理员密码使用 BCrypt 加密存储，初始化脚本中已包含 admin/123456 账号。
 > 项目已集成 `DataInitializer`，启动后端时会自动重置 admin 密码为 123456。
@@ -381,7 +379,7 @@ Nginx（80/443端口）
 ```bash
 cd shouyang-server
 mvn clean package -DskipTests
-# 生成 jar 包：target/shouyang-server-1.0.0.jar
+# 生成 jar 包：target/shouyang-server.jar
 ```
 
 ### 前端打包
@@ -437,11 +435,14 @@ server {
 ### 后端生产环境运行
 
 ```bash
+# 生产环境需先从模板复制配置（修改数据库信息）
+cp src/main/resources/application-prod.yml.example src/main/resources/application-prod.yml
+
 # 使用生产环境配置
-java -jar shouyang-server-1.0.0.jar --spring.profiles.active=prod
+java -jar target/shouyang-server.jar --spring.profiles.active=prod
 
 # 或后台运行
-nohup java -jar shouyang-server-1.0.0.jar --spring.profiles.active=prod > app.log 2>&1 &
+nohup java -jar target/shouyang-server.jar --spring.profiles.active=prod > app.log 2>&1 &
 ```
 
 ---
@@ -567,4 +568,4 @@ cp application-dev.yml.example application-dev.yml
 
 ---
 
-> **最后更新：** 2026-09-18
+> **最后更新：** 2026-10-27
